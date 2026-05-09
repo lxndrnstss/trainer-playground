@@ -117,7 +117,7 @@ export default function Home() {
 
     if (!trimmed) {
       const { data } = await supabase
-        .from("trainers_public")
+        .from("trainers")
         .select(`
           id,
           name,
