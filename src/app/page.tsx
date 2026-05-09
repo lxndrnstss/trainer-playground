@@ -152,10 +152,7 @@ export default function Home() {
     fetchTrainers("");
   }, []);
 
-  const filteredTrainers = useMemo(() => {
-    if (activeArchetype === "All") return trainers;
-    return trainers.filter((t) => inferArchetype(t) === activeArchetype);
-  }, [trainers, activeArchetype]);
+const filteredTrainers = trainers;
 
   return (
     <main
