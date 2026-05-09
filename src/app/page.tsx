@@ -24,6 +24,7 @@ type Trainer = {
   id: string;
   name: string | null;
   full_name?: string | null;
+  photo_url?: string | null;
   location: string | null;
   division?: string | null;
   district?: string | null;
@@ -122,6 +123,7 @@ export default function Home() {
           id,
           name,
           full_name,
+          photo_url,
           location,
           division,
           district,
@@ -312,6 +314,12 @@ const filteredTrainers = trainers;
               const languages = splitList(t.languages);
               const archetype = inferArchetype(t);
               const style = archetypeStyle(archetype);
+              const initials = name
+                .split(" ")
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part[0])
+                .join("");
 
               return (
                 <article
@@ -400,30 +408,17 @@ const filteredTrainers = trainers;
                       </span>
                     </div>
 
-                    <div
-                      style={{
-                        height: 128,
-                        borderRadius: 24,
-                        marginBottom: 18,
-                        border: "1px solid rgba(255,255,255,0.12)",
-                        background:
-                          "radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 28%), rgba(255,255,255,0.05)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: style.accent,
-                        fontSize: 46,
-                        fontWeight: 900,
-                        letterSpacing: "-0.08em",
-                      }}
-                    >
-                      {name
-                        .split(" ")
-                        .filter(Boolean)
-                        .slice(0, 2)
-                        .map((part) => part[0])
-                        .join("")}
-                    </div>
+                    {t.photo_url ? (
+                      <img
+                        src={t.photo_url}
+                        alt={t.name || "Trainer photo"}
+                        className="h-16 w-16 rounded-2xl object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 text-white">
+                        {initials}
+                      </div>
+                    )}
 
                     <h2
                       style={{
