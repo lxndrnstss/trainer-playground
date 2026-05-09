@@ -15,7 +15,12 @@ function normalize(text: string | null) {
 type Trainer = {
   id: string;
   name: string | null;
+  full_name?: string | null;
   location: string | null;
+  division?: string | null;
+  district?: string | null;
+  title?: string | null;
+  organization?: string | null;
   languages: string | null;
   expertise: string | null;
 };
