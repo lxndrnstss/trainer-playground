@@ -8,7 +8,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-function normalize(text: string | null) {
+function normalize(text: string | null | undefined) {
   return (text || "").trim() || "—";
 }
 
@@ -32,12 +32,24 @@ export default function Home() {
 
   async function fetchTrainers(q: string) {
     setLoading(true);
+
     const trimmed = q.trim();
 
     if (!trimmed) {
       const { data } = await supabase
         .from("trainers_public")
-        .select("id, name, location, languages, expertise")
+        .select(`
+          id,
+          name,
+          full_name,
+          location,
+          division,
+          district,
+          title,
+          organization,
+          languages,
+          expertise
+        `)
         .order("created_at", { ascending: false })
         .limit(25);
 
@@ -61,23 +73,50 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={{ padding: "40px", fontFamily: "system-ui" }}>
-      <h1>Trainer Playground</h1>
+    <main
+      style={{
+        padding: "40px",
+        fontFamily: "system-ui",
+        maxWidth: 900,
+        margin: "0 auto",
+      }}
+    >
+      <h1 style={{ fontSize: 36, marginBottom: 8 }}>
+        Trainer Playground
+      </h1>
 
-      <div style={{ margin: "16px 0" }}>
+      <p style={{ color: "#666", marginBottom: 24 }}>
+        Discover trainers, mentors, facilitators, and ecosystem builders
+        across Sarawak.
+      </p>
+
+      <div style={{ margin: "16px 0 32px" }}>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") fetchTrainers(query);
           }}
-          placeholder="Search (name / location / languages / expertise)"
-          style={{ width: "100%", padding: 10, fontSize: 16 }}
+          placeholder="Search by name, expertise, language, or location"
+          style={{
+            width: "100%",
+            padding: 14,
+            fontSize: 16,
+            borderRadius: 10,
+            border: "1px solid #ccc",
+          }}
         />
 
         <button
           onClick={() => fetchTrainers(query)}
-          style={{ marginTop: 12, padding: "10px 16px", fontSize: 16 }}
+          style={{
+            marginTop: 12,
+            padding: "12px 18px",
+            fontSize: 16,
+            borderRadius: 10,
+            border: "none",
+            cursor: "pointer",
+          }}
         >
           Search
         </button>
@@ -93,23 +132,68 @@ export default function Home() {
             <li
               key={t.id}
               style={{
-                padding: 14,
-                margin: "12px 0",
-                borderRadius: 10,
+                padding: 20,
+                margin: "14px 0",
+                borderRadius: 16,
                 border: "1px solid #ddd",
+                background: "#fff",
               }}
             >
-              <div style={{ fontWeight: 700 }}>{normalize(t.name)}</div>
-              <div style={{ color: "#333" }}>{normalize(t.location)}</div>
-              <div style={{ color: "#555" }}>
-                {normalize(t.languages)} · {normalize(t.expertise)}
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: 20,
+                  marginBottom: 4,
+                }}
+              >
+                {normalize(t.full_name || t.name)}
+              </div>
+
+              <div
+                style={{
+                  color: "#444",
+                  marginBottom: 6,
+                }}
+              >
+                {normalize(t.location || t.division || t.district)}
+              </div>
+
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: 14,
+                  marginBottom: 10,
+                }}
+              >
+                {normalize(t.title || t.organization)}
+              </div>
+
+              <div
+                style={{
+                  color: "#555",
+                  lineHeight: 1.6,
+                }}
+              >
+                <strong>Languages:</strong>{" "}
+                {normalize(t.languages)}
+              </div>
+
+              <div
+                style={{
+                  color: "#555",
+                  marginTop: 6,
+                  lineHeight: 1.6,
+                }}
+              >
+                <strong>Expertise:</strong>{" "}
+                {normalize(t.expertise)}
               </div>
             </li>
           ))}
         </ul>
       )}
 
-      <hr style={{ margin: "28px 0" }} />
+      <hr style={{ margin: "36px 0" }} />
 
       <a href="/submit">Submit a trainer</a>
     </main>
